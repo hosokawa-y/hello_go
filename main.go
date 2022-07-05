@@ -1,19 +1,16 @@
 package main
 
-import (
-	"fmt"
-	"hello/app/models"
-)
+import "hello/app/models"
 
 func main() {
-	fmt.Println(models.Db)
-	u := &models.User{}
-	u.Name = "test"
-	u.Email = "test@example.com"
-	u.PassWord = "testtest"
-	fmt.Println(u)
-
-	u.CreateUser()
+	//fmt.Println(models.Db)
+	//u := &models.User{}
+	//u.Name = "test"
+	//u.Email = "test@example.com"
+	//u.PassWord = "testtest"
+	//fmt.Println(u)
+	//
+	//u.CreateUser()
 
 	//u, _ := models.GetUser(1)
 	//fmt.Println(u)
@@ -35,17 +32,19 @@ func main() {
 	//t, _ := models.GetTodo(1)
 	//fmt.Println(t)
 
-	user, _ := models.GetUser(3)
-	user.CreateTodo("Third todo")
+	//user, _ := models.GetUser(3)
+	//user.CreateTodo("Third todo")
 
 	//todos, _ := models.GetTodos()
 	//for _, v := range todos {
 	//	fmt.Println(v)
 	//}
-	user2, _ := models.GetUser(2)
-	todos, _ := user2.GetTodosByUser()
-	for _, v := range todos {
-		fmt.Println(v)
-	}
-
+	//user2, _ := models.GetUser(2)
+	//todos, _ := user2.GetTodosByUser()
+	//for _, v := range todos {
+	//	fmt.Println(v)
+	//}
+	t, _ := models.GetTodo(1)
+	t.Content = "update todo"
+	t.UpdateTodo()
 }
