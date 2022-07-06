@@ -44,7 +44,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		user.Email,
 		Encrypt(user.PassWord),
 		time.Now())
-	json.NewEncoder(w).Encode(user)
+
 }
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
@@ -85,20 +85,27 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func (u *User) UpdateUser() (err error) {
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	user := User{}
+	json.Unmarshal(reqBody, &user)
+
 	cmd := `update users set name = ?, email = ? where id = ?`
-	_, err = Db.Exec(cmd, u.Name, u.Email, u.ID)
+	_, err = Db.Exec(cmd, user.Name, user.Email, id)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return err
 }
 
-func (u *User) DeleteUser() (err error) {
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
 	cmd := `delete from users where id = ?`
-	_, err = Db.Exec(cmd, u.ID)
+	_, err = Db.Exec(cmd, id)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return err
 }
