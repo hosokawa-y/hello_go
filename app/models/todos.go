@@ -1,41 +1,40 @@
 package models
 
 import (
+	"encoding/json"
+	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"time"
 )
 
 type Todo struct {
-	ID        int
-	Content   string
-	UserID    int
-	CreatedAt time.Time
+	ID        int       `json:"ID"`
+	Content   string    `json:"Content"`
+	UserID    int       `json:"UserID"`
+	CreatedAt time.Time `json:"CreatedAt"`
 }
 
-func (u *User) CreateTodo(content string) (err error) {
+type Todos []Todo
+
+func CreateTodo(w http.ResponseWriter, r *http.Request) {
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	todo := Todo{}
+	json.Unmarshal(reqBody, &todo)
+
 	cmd := `insert into todos (content, user_id, created_at) values (?,?,?)`
 
-	_, err = Db.Exec(cmd, content, u.ID, time.Now())
+	_, err = Db.Exec(cmd, todo.Content, todo.UserID, time.Now())
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return err
 }
 
-func GetTodo(id int) (todo Todo, err error) {
-	cmd := `select id, content, user_id, created_at from todos where id = ?`
-	todo = Todo{}
+func GetTodos(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	todos := Todos{}
 
-	err = Db.QueryRow(cmd, id).Scan(
-		&todo.ID,
-		&todo.Content,
-		&todo.UserID,
-		&todo.CreatedAt)
-
-	return todo, err
-}
-
-func GetTodos() (todos []Todo, err error) {
 	cmd := `select id, content, user_id, created_at from todos`
 	rows, err := Db.Query(cmd)
 	if err != nil {
@@ -51,13 +50,34 @@ func GetTodos() (todos []Todo, err error) {
 	}
 	rows.Close()
 
-	return todos, err
+	json.NewEncoder(w).Encode(todos)
 }
 
-func (u *User) GetTodosByUser() (todos []Todo, err error) {
+func GetTodo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	todo := Todo{}
+
+	cmd := `select id, content, user_id, created_at from todos where id = ?`
+
+	err = Db.QueryRow(cmd, id).Scan(
+		&todo.ID,
+		&todo.Content,
+		&todo.UserID,
+		&todo.CreatedAt)
+
+	json.NewEncoder(w).Encode(todo)
+}
+
+func GetTodosByUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	userID := vars["id"]
+	todos := Todos{}
 	cmd := `select id, user_id, content, created_at from todos where user_id = ?`
 
-	rows, err := Db.Query(cmd, u.ID)
+	rows, err := Db.Query(cmd, userID)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -71,23 +91,31 @@ func (u *User) GetTodosByUser() (todos []Todo, err error) {
 		todos = append(todos, todo)
 	}
 	rows.Close()
-	return todos, err
+
+	json.NewEncoder(w).Encode(todos)
 }
 
-func (t *Todo) UpdateTodo() error {
+func UpdateTodo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	todo := Todo{}
+	json.Unmarshal(reqBody, &todo)
+
 	cmd := `update todos set content = ?, user_id = ? where id = ?`
-	_, err = Db.Exec(cmd, t.Content, t.UserID, t.ID)
+	_, err = Db.Exec(cmd, todo.Content, todo.UserID, id)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return err
 }
 
-func (t *Todo) DeleteTodo() error {
+func DeleteTodo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
 	cmd := `delete from todos where id = ?`
-	_, err = Db.Exec(cmd, t.ID)
+	_, err = Db.Exec(cmd, id)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return err
 }
