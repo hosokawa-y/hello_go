@@ -2,43 +2,53 @@ package models
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
 )
 
+// json: ~ をパラメータに付与すると、jsonエンコード時にパラメータ名を指定することができます。
+// また、omitemptyを付与するとパラメータが空のときに、jsonのパラメータから消すことができます。
+// これはクライアントアプリと仕様を統一する必要があります。
+
 type User struct {
-	ID        int
-	UUID      string
-	Name      string
-	Email     string
-	PassWord  string
-	CreatedAt time.Time
+	ID        int       `json:"ID"`
+	UUID      string    `json:"UUID"`
+	Name      string    `json:"Name"`
+	Email     string    `json:"Email"`
+	PassWord  string    `json:"PassWord"`
+	CreatedAt time.Time `json:"CreatedAt"`
 }
 
 type Users []User
 
-func (u *User) CreateUser() (err error) {
+func CreateUser(w http.ResponseWriter, r *http.Request) {
+	// get the body of our POST request
+	// return the string response containing the request body
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	user := User{}
+	json.Unmarshal(reqBody, &user)
+
 	cmd := `insert into users (
 		uuid,
 		name,
 		email,
 		password,
 		created_at) values (?, ?, ?, ?, ?)`
+
 	_, err = Db.Exec(cmd,
 		createUUID(),
-		u.Name,
-		u.Email,
-		Encrypt(u.PassWord),
+		user.Name,
+		user.Email,
+		Encrypt(user.PassWord),
 		time.Now())
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-	return err
+	json.NewEncoder(w).Encode(user)
 }
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	users := Users{}
 	cmd := `select id, uuid, name, email, password, created_at from users`
 	rows, err := Db.Query(cmd)
@@ -58,10 +68,13 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-func GetUser(id int) (user User, err error) {
-	user = User{}
+func GetUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	key := vars["id"]
+	user := User{}
 	cmd := `select id, uuid, name, email, password, created_at from users where id = ?`
-	err = Db.QueryRow(cmd, id).Scan(
+	err = Db.QueryRow(cmd, key).Scan(
 		&user.ID,
 		&user.UUID,
 		&user.Name,
@@ -69,7 +82,7 @@ func GetUser(id int) (user User, err error) {
 		&user.PassWord,
 		&user.CreatedAt,
 	)
-	return user, err
+	json.NewEncoder(w).Encode(user)
 }
 
 func (u *User) UpdateUser() (err error) {
