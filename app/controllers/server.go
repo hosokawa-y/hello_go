@@ -1,11 +1,14 @@
 package controllers
 
 import (
+	"hello/app/models"
 	"hello/config"
+	"log"
 	"net/http"
 )
 
-func StartMainServer() error {
+func HandleRequests() {
 	http.HandleFunc("/", top)
-	return http.ListenAndServe(":"+config.Config.Port, nil)
+	http.HandleFunc("/users", models.GetUsers)
+	log.Fatalln(http.ListenAndServe(":"+config.Config.Port, nil))
 }

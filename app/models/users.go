@@ -1,7 +1,9 @@
 package models
 
 import (
+	"encoding/json"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -13,6 +15,8 @@ type User struct {
 	PassWord  string
 	CreatedAt time.Time
 }
+
+type Users []User
 
 func (u *User) CreateUser() (err error) {
 	cmd := `insert into users (
@@ -32,6 +36,26 @@ func (u *User) CreateUser() (err error) {
 		log.Fatalln(err)
 	}
 	return err
+}
+
+func GetUsers(w http.ResponseWriter, r *http.Request) {
+	users := Users{}
+	cmd := `select id, uuid, name, email, password, created_at from users`
+	rows, err := Db.Query(cmd)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	for rows.Next() {
+		var user User
+		err = rows.Scan(&user.ID, &user.UUID, &user.Name, &user.Email, &user.PassWord, &user.CreatedAt)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		users = append(users, user)
+	}
+	rows.Close()
+
+	json.NewEncoder(w).Encode(users)
 }
 
 func GetUser(id int) (user User, err error) {
