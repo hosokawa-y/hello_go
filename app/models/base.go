@@ -2,44 +2,56 @@ package models
 
 import (
 	"crypto/sha1"
-	"database/sql"
 	"fmt"
 	"github.com/google/uuid"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"hello/config"
 	"log"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
-var Db *sql.DB
+var Db *gorm.DB
 var err error
 
-const (
-	tableNameUser = "users"
-	tableNameTodo = "todos"
-)
+//type Model struct {
+//	ID        uint       `gorm:"primary_key" json:"id"`
+//	CreatedAt *time.Time `json:"created_at"`
+//	UpdatedAt *time.Time `json:"updated_at"`
+//	DeletedAt *time.Time `json:"deleted_at"`
+//}
 
-func init() {
-	Db, err = sql.Open(config.Config.SQLDriver, config.Config.DbName)
+type User struct {
+	gorm.Model `json:"model"`
+	UUID       string `json:"UUID"`
+	Name       string `json:"Name"`
+	Email      string `json:"Email"`
+	PassWord   string `json:"PassWord"`
+}
+
+func GetAllUsers(users *[]User) {
+	Db.Find(&users)
+}
+
+func InsertUser(user *User) {
+	Db.Create(&user)
+}
+
+func
+
+func Connect() {
+	Db, err = gorm.Open(sqlite.Open(config.Config.DbName), &gorm.Config{})
+	fmt.Println(Db)
 	if err != nil {
 		log.Fatalln(err)
+		panic("failed to connect database")
+	} else {
+		fmt.Println("Successfully connect database")
 	}
+	Db.AutoMigrate(&User{}, &Todo{})
 
-	cmdU := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		uuid STRING NOT NULL UNIQUE,
-		name STRING,
-		email STRING,
-		password STRING,
-		created_at DATETIME)`, tableNameUser)
-	Db.Exec(cmdU)
-
-	cmdT := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		content TEXT,
-		user_id INTEGER,
-		created_at DATETIME)`, tableNameTodo)
-	Db.Exec(cmdT)
+	if !(Db.Migrator().HasTable(&User{})) {
+		Db.Migrator().CreateTable(&User{})
+	}
 }
 
 func createUUID() (uuidobj uuid.UUID) {
