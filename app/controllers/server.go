@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/gorilla/mux"
-	"hello/app/models"
 	"hello/config"
 	"log"
 	"net/http"
@@ -13,11 +12,11 @@ func HandleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	// replace http.HandleFunc with myRouter.HandleFunc
 	myRouter.HandleFunc("/", top)
-	myRouter.HandleFunc("/users", models.GetUsers)
-	//myRouter.HandleFunc("/user/{id}", models.GetUser).Methods("GET")
-	myRouter.HandleFunc("/user", models.CreateUser).Methods("POST")
-	//myRouter.HandleFunc("/user/{id}", models.UpdateUser).Methods("PUT")
-	//myRouter.HandleFunc("/user/{id}", models.DeleteUser).Methods("DELETE")
+	myRouter.HandleFunc("/users", GetUsers)
+	myRouter.HandleFunc("/user/{id}", GetUser).Methods("GET")
+	myRouter.HandleFunc("/user", CreateUser).Methods("POST")
+	myRouter.HandleFunc("/user/{id}", UpdateUser).Methods("PUT")
+	myRouter.HandleFunc("/user/{id}", DeleteUser).Methods("DELETE")
 
 	//myRouter.HandleFunc("/todos", models.GetTodos).Methods("GET")
 	//myRouter.HandleFunc("/todo", models.CreateTodo).Methods("POST")

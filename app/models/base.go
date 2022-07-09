@@ -8,27 +8,34 @@ import (
 	"gorm.io/gorm"
 	"hello/config"
 	"log"
+	"time"
 )
 
 var Db *gorm.DB
 var err error
 
-//type Model struct {
-//	ID        uint       `gorm:"primary_key" json:"id"`
-//	CreatedAt *time.Time `json:"created_at"`
-//	UpdatedAt *time.Time `json:"updated_at"`
-//	DeletedAt *time.Time `json:"deleted_at"`
-//}
-
-type User struct {
-	gorm.Model `json:"model"`
-	UUID       string `json:"UUID"`
-	Name       string `json:"Name"`
-	Email      string `json:"Email"`
-	PassWord   string `json:"PassWord"`
+type Model struct {
+	ID        uint       `gorm:"primary_key" json:"id"`
+	CreatedAt *time.Time `json:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at"`
 }
 
-func GetAllUsers(users *[]User) {
+type User struct {
+	Model    `json:"model"`
+	UUID     string `json:"UUID"`
+	Name     string `json:"Name"`
+	Email    string `json:"Email"`
+	Password string `json:"PassWord"`
+}
+
+type Todo struct {
+	gorm.Model
+	Content string `json:"Content"`
+	UserID  int    `json:"UserID"`
+}
+
+func FetchAllUsers(users *[]User) {
 	Db.Find(&users)
 }
 
@@ -36,10 +43,25 @@ func InsertUser(user *User) {
 	Db.Create(&user)
 }
 
-func
+func FetchUser(user *User, id string) {
+	Db.First(&user, id)
+
+}
+
+func UpdateUser(user *User, id string) {
+	Db.Model(&user).Where("id = ?", id).Updates(map[string]interface{}{
+		"Name":     user.Name,
+		"Email":    user.Email,
+		"Password": Encrypt(user.Password),
+	})
+}
+
+func DeleteUser(id string) {
+	Db.Where("id = ?", id).Delete(&User{})
+}
 
 func Connect() {
-	Db, err = gorm.Open(sqlite.Open(config.Config.DbName), &gorm.Config{})
+	Db, err = gorm.Open(sqlite.Open(config.Config.SQLDriver), &gorm.Config{})
 	fmt.Println(Db)
 	if err != nil {
 		log.Fatalln(err)
@@ -50,11 +72,11 @@ func Connect() {
 	Db.AutoMigrate(&User{}, &Todo{})
 
 	if !(Db.Migrator().HasTable(&User{})) {
-		Db.Migrator().CreateTable(&User{})
+		Db.Migrator().CreateTable(&User{}, &Todo{})
 	}
 }
 
-func createUUID() (uuidobj uuid.UUID) {
+func CreateUUID() (uuidobj uuid.UUID) {
 	uuidobj, _ = uuid.NewUUID()
 	return uuidobj
 }

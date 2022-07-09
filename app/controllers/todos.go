@@ -1,32 +1,23 @@
-package models
+package controllers
 
 import (
 	"encoding/json"
-	"gorm.io/gorm"
+	"hello/app/models"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
-type Todo struct {
-	gorm.Model
-	Content string `json:"Content"`
-	UserID  int    `json:"UserID"`
-}
-
-type Todos []Todo
-
 func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
-	todo := Todo{}
+	todo := models.Todo{}
 	json.Unmarshal(reqBody, &todo)
 
 	//cmd := `insert into todos (content, user_id, created_at) values (?,?,?)`
 
 	//_, err = Db.Exec(cmd, todo.Content, todo.UserID, time.Now())
-	if err != nil {
-		log.Fatalln(err)
-	}
+	//if models.err != nil {
+	//	log.Fatalln(models.err)
+	//}
 }
 
 func GetTodos(w http.ResponseWriter, r *http.Request) {
@@ -102,9 +93,9 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	//
 	//cmd := `update todos set content = ?, user_id = ? where id = ?`
 	//_, err = Db.Exec(cmd, todo.Content, todo.UserID, id)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	//if models.err != nil {
+	//	log.Fatalln(models.err)
+	//}
 }
 
 func DeleteTodo(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +104,7 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	//
 	//cmd := `delete from todos where id = ?`
 	//_, err = Db.Exec(cmd, id)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	//if models.err != nil {
+	//	log.Fatalln(models.err)
+	//}
 }
