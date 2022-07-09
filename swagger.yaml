@@ -1,0 +1,23 @@
+---
+openapi: "2.0"
+info:
+  version: 1.0.0
+  title: TodoApp API
+paths:
+  /users:
+    get:
+      produces:
+        - application/json
+      summary: Return a list of users.
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: object
+            properties:
+              id:
+                type: string
+                format: string
+
+            description: contains the actual greeting as plain text

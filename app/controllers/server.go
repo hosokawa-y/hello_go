@@ -2,14 +2,33 @@ package controllers
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/swaggo/http-swagger"
 	"hello/config"
+	_ "hello/docs"
 	"log"
 	"net/http"
 )
 
+// @title My Swagger Example API
+// @version 1.0
+// @description This is a sample server ToDoeeApp server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /
+
 func HandleRequests() {
 	// creates a new instance of a mux router
-	myRouter := mux.NewRouter().StrictSlash(true)
+	//myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter := mux.NewRouter()
+	myRouter.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 	// replace http.HandleFunc with myRouter.HandleFunc
 	myRouter.HandleFunc("/", top)
 	myRouter.HandleFunc("/users", GetUsers)
