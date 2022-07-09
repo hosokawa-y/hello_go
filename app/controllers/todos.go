@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"hello/app/models"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -11,100 +13,88 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	todo := models.Todo{}
 	json.Unmarshal(reqBody, &todo)
+	models.InsertTodo(&todo)
+	responseBody, err := json.Marshal(todo)
 
-	//cmd := `insert into todos (content, user_id, created_at) values (?,?,?)`
+	if err != nil {
+		log.Fatalln(err)
+	}
 
-	//_, err = Db.Exec(cmd, todo.Content, todo.UserID, time.Now())
-	//if models.err != nil {
-	//	log.Fatalln(models.err)
-	//}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(responseBody)
+
 }
 
 func GetTodos(w http.ResponseWriter, r *http.Request) {
+	var todos []models.Todo
+	models.FetchAllTodos(&todos)
+	responseBody, err := json.Marshal(todos)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	//todos := Todos{}
-	//
-	//cmd := `select id, content, user_id, created_at from todos`
-	//rows, err := Db.Query(cmd)
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
-	//for rows.Next() {
-	//	var todo Todo
-	//	err = rows.Scan(&todo.ID, &todo.Content, &todo.UserID, &todo.CreatedAt)
-	//	if err != nil {
-	//		log.Fatalln(err)
-	//	}
-	//	todos = append(todos, todo)
-	//}
-	//rows.Close()
-	//
-	//json.NewEncoder(w).Encode(todos)
+	w.Write(responseBody)
 }
 
 func GetTodo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	todo := models.Todo{}
+	models.FetchTodo(&todo, id)
+	responseBody, err := json.Marshal(todo)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	//vars := mux.Vars(r)
-	//id := vars["id"]
-	//todo := Todo{}
-	//
-	//cmd := `select id, content, user_id, created_at from todos where id = ?`
-	//
-	//err = Db.QueryRow(cmd, id).Scan(
-	//	&todo.ID,
-	//	&todo.Content,
-	//	&todo.UserID,
-	//	&todo.CreatedAt)
-	//
-	//json.NewEncoder(w).Encode(todo)
+	w.Write(responseBody)
 }
 
 func GetTodosByUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID := vars["id"]
+	var todos []models.Todo
+	models.FetchTodosByUser(&todos, userID)
+	responseBody, err := json.Marshal(todos)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	//vars := mux.Vars(r)
-	//userID := vars["id"]
-	//todos := Todos{}
-	//cmd := `select id, user_id, content, created_at from todos where user_id = ?`
-	//
-	//rows, err := Db.Query(cmd, userID)
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
-	//for rows.Next() {
-	//	var todo Todo
-	//	err = rows.Scan(&todo.ID, &todo.UserID, &todo.Content, &todo.CreatedAt)
-	//
-	//	if err != nil {
-	//		log.Fatalln(err)
-	//	}
-	//	todos = append(todos, todo)
-	//}
-	//rows.Close()
-	//
-	//json.NewEncoder(w).Encode(todos)
+	w.Write(responseBody)
 }
 
 func UpdateTodo(w http.ResponseWriter, r *http.Request) {
-	//vars := mux.Vars(r)
-	//id := vars["id"]
-	//reqBody, _ := ioutil.ReadAll(r.Body)
-	//todo := Todo{}
-	//json.Unmarshal(reqBody, &todo)
-	//
-	//cmd := `update todos set content = ?, user_id = ? where id = ?`
-	//_, err = Db.Exec(cmd, todo.Content, todo.UserID, id)
-	//if models.err != nil {
-	//	log.Fatalln(models.err)
-	//}
+	vars := mux.Vars(r)
+	id := vars["id"]
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	todo := models.Todo{}
+
+	json.Unmarshal(reqBody, &todo)
+	models.UpdateTodo(&todo, id)
+	responseBody, err := json.Marshal(todo)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(responseBody)
 }
 
 func DeleteTodo(w http.ResponseWriter, r *http.Request) {
-	//vars := mux.Vars(r)
-	//id := vars["id"]
-	//
-	//cmd := `delete from todos where id = ?`
-	//_, err = Db.Exec(cmd, id)
-	//if models.err != nil {
-	//	log.Fatalln(models.err)
-	//}
+	vars := mux.Vars(r)
+	id := vars["id"]
+	models.DeleteTodo(id)
+
+	responseBody, err := json.Marshal(DeleteResponse{ID: id})
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(responseBody)
 }

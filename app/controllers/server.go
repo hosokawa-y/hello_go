@@ -18,12 +18,12 @@ func HandleRequests() {
 	myRouter.HandleFunc("/user/{id}", UpdateUser).Methods("PUT")
 	myRouter.HandleFunc("/user/{id}", DeleteUser).Methods("DELETE")
 
-	//myRouter.HandleFunc("/todos", models.GetTodos).Methods("GET")
-	//myRouter.HandleFunc("/todo", models.CreateTodo).Methods("POST")
-	//myRouter.HandleFunc("/todo/{id}", models.GetTodo).Methods("GET")
-	//myRouter.HandleFunc("/todo/{id}", models.UpdateTodo).Methods("PUT")
-	//myRouter.HandleFunc("/todo/{id}", models.DeleteTodo).Methods("DELETE")
-	//myRouter.HandleFunc("/todo/user/{id}", models.GetTodosByUser).Methods("GET")
+	myRouter.HandleFunc("/todos", GetTodos).Methods("GET")
+	myRouter.HandleFunc("/todo", CreateTodo).Methods("POST")
+	myRouter.HandleFunc("/todo/{id}", GetTodo).Methods("GET")
+	myRouter.HandleFunc("/todo/{id}", UpdateTodo).Methods("PUT")
+	myRouter.HandleFunc("/todo/{id}", DeleteTodo).Methods("DELETE")
+	myRouter.HandleFunc("/todo/user/{id}", GetTodosByUser).Methods("GET")
 	// finally, instead of passing in nil, we want
 	// to pass in our newly created router as the second argument
 	log.Fatalln(http.ListenAndServe(":"+config.Config.Port, myRouter))

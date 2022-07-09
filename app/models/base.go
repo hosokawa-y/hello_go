@@ -60,6 +60,33 @@ func DeleteUser(id string) {
 	Db.Where("id = ?", id).Delete(&User{})
 }
 
+func FetchAllTodos(todos *[]Todo) {
+	Db.Find(&todos)
+}
+
+func FetchTodosByUser(todos *[]Todo, id string) {
+	Db.Where("user_id = ?", id).Find(&todos)
+}
+
+func FetchTodo(todo *Todo, id string) {
+	Db.Where("id = ?", id).Find(&todo)
+}
+
+func InsertTodo(todo *Todo) {
+	Db.Create(&todo)
+}
+
+func UpdateTodo(todo *Todo, id string) {
+	Db.Model(&todo).Where("id = ?", id).Updates(map[string]interface{}{
+		"Content": todo.Content,
+		"UserID":  todo.UserID,
+	})
+}
+
+func DeleteTodo(id string) {
+	Db.Where("id = ?", id).Delete(&Todo{})
+}
+
 func Connect() {
 	Db, err = gorm.Open(sqlite.Open(config.Config.SQLDriver), &gorm.Config{})
 	fmt.Println(Db)
