@@ -5,6 +5,21 @@ definitions:
       id:
         type: string
     type: object
+  models.Todo:
+    properties:
+      Content:
+        type: string
+      UserID:
+        type: integer
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   models.User:
     properties:
       Email:
@@ -32,6 +47,137 @@ info:
   title: My Swagger Example API
   version: "2.0"
 paths:
+  /todo:
+    post:
+      consumes:
+      - application/json
+      description: create Todo
+      parameters:
+      - description: todo details
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/models.Todo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Todo'
+            type: array
+      summary: create Todo
+      tags:
+      - todos
+  /todo/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete todo
+      parameters:
+      - description: todo search by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.DeleteResponse'
+      summary: delete todo
+      tags:
+      - todos
+    get:
+      consumes:
+      - application/json
+      description: Get details of todo
+      parameters:
+      - description: todo search by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Todo'
+      summary: Get details of todo
+      tags:
+      - todos
+    put:
+      consumes:
+      - application/json
+      description: update todo
+      parameters:
+      - description: todo search by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: user details
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/models.Todo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Todo'
+      summary: update todo
+      tags:
+      - todo
+  /todo/user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get details of todo by user
+      parameters:
+      - description: user search by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Todo'
+            type: array
+      summary: Get details of todo by user
+      tags:
+      - todos
+  /todos:
+    get:
+      consumes:
+      - application/json
+      description: Get details of all todos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Todo'
+            type: array
+      summary: Get details of all todos
+      tags:
+      - todos
   /user:
     post:
       consumes:

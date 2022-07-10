@@ -9,6 +9,15 @@ import (
 	"net/http"
 )
 
+// CreateTodo godoc
+// @Summary create Todo
+// @Description create Todo
+// @Tags todos
+// @Accept  json
+// @Produce  json
+// @Param params body models.Todo true "todo details"
+// @Success 200 {array} models.Todo
+// @Router /todo [POST]
 func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	todo := models.Todo{}
@@ -25,6 +34,14 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GetTodos godoc
+// @Summary Get details of all todos
+// @Description Get details of all todos
+// @Tags todos
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.Todo
+// @Router /todos [GET]
 func GetTodos(w http.ResponseWriter, r *http.Request) {
 	var todos []models.Todo
 	models.FetchAllTodos(&todos)
@@ -38,6 +55,15 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 	w.Write(responseBody)
 }
 
+// GetTodo godoc
+// @Summary Get details of todo
+// @Description Get details of todo
+// @Tags todos
+// @Accept  json
+// @Produce  json
+// @Param id path int true "todo search by id"
+// @Success 200 {object} models.Todo
+// @Router /todo/{id} [GET]
 func GetTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
@@ -53,6 +79,15 @@ func GetTodo(w http.ResponseWriter, r *http.Request) {
 	w.Write(responseBody)
 }
 
+// GetTodosByUser godoc
+// @Summary Get details of todo by user
+// @Description Get details of todo by user
+// @Tags todos
+// @Accept  json
+// @Produce  json
+// @Param id path int true "user search by id"
+// @Success 200 {array} models.Todo
+// @Router /todo/user/{id} [GET]
 func GetTodosByUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID := vars["id"]
@@ -68,6 +103,16 @@ func GetTodosByUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(responseBody)
 }
 
+// UpdateTodo godoc
+// @Summary update todo
+// @Description update todo
+// @Tags todos
+// @Accept  json
+// @Produce  json
+// @Param id path int true "todo search by id"
+// @Param params body models.Todo true "user details"
+// @Success 200 {object} models.Todo
+// @Router /todo/{id} [PUT]
 func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
@@ -85,6 +130,15 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	w.Write(responseBody)
 }
 
+// DeleteTodo godoc
+// @Summary delete todo
+// @Description delete todo
+// @Tags todos
+// @Accept  json
+// @Produce  json
+// @Param id path int true "todo search by id"
+// @Success 200 {object} DeleteResponse
+// @Router /todo/{id} [DELETE]
 func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
