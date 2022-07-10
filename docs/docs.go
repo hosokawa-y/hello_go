@@ -129,7 +129,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "todo"
+                    "todos"
                 ],
                 "summary": "update todo",
                 "parameters": [

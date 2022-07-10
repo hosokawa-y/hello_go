@@ -1,9 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"gopkg.in/go-ini/ini.v1"
-	"hello/utils"
 	"log"
+	"os"
 )
 
 type ConfigList struct {
@@ -15,14 +16,21 @@ type ConfigList struct {
 
 var Config ConfigList
 
+const targetEnvName = "GO_ENV"
+
 //main関数より先に実行する
 func init() {
 	LoadConfig()
-	utils.LoggingSettings(Config.LogFile)
+	//utils.LoggingSettings(Config.LogFile)
 }
 
 func LoadConfig() {
-	cfg, err := ini.Load("config.ini")
+	var cfg *ini.File
+	var err error
+	if "" == os.Getenv(targetEnvName) {
+		cfg, err = ini.Load("config.ini")
+	}
+	//cfg, err := ini.Load("config.ini")
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -32,4 +40,5 @@ func LoadConfig() {
 		DbName:    cfg.Section("db").Key("name").String(),
 		LogFile:   cfg.Section("web").Key("logfile").String(),
 	}
+	fmt.Println("App Mode:", cfg.Section("").Key("app_mode").String())
 }

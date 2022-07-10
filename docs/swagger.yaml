@@ -137,7 +137,7 @@ paths:
             $ref: '#/definitions/models.Todo'
       summary: update todo
       tags:
-      - todo
+      - todos
   /todo/user/{id}:
     get:
       consumes:
