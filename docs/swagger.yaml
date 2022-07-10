@@ -1,12 +1,17 @@
 basePath: /
 definitions:
+  controllers.DeleteResponse:
+    properties:
+      id:
+        type: string
+    type: object
   models.User:
     properties:
       Email:
         type: string
       Name:
         type: string
-      PassWord:
+      Password:
         type: string
       UUID:
         type: string
@@ -21,23 +26,24 @@ definitions:
     type: object
 host: localhost:8080
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
+  contact: {}
   description: This is a sample server ToDoeeApp server.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: My Swagger Example API
-  version: "1.0"
+  version: "2.0"
 paths:
-  /users:
-    get:
+  /user:
+    post:
       consumes:
       - application/json
-      description: Get details of all orders
+      description: create user
+      parameters:
+      - description: user details
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
       produces:
       - application/json
       responses:
@@ -47,7 +53,91 @@ paths:
             items:
               $ref: '#/definitions/models.User'
             type: array
-      summary: Get details of all orders
+      summary: create user
       tags:
-      - orders
+      - users
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete user
+      parameters:
+      - description: user search by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.DeleteResponse'
+      summary: delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Get details of user
+      parameters:
+      - description: user search by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Get details of user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: update user
+      parameters:
+      - description: user search by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: user details
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: update user
+      tags:
+      - users
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get details of all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: Get details of all users
+      tags:
+      - users
 swagger: "2.0"

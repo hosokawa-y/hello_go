@@ -16,21 +16,21 @@ var err error
 
 type Model struct {
 	ID        uint       `gorm:"primary_key" json:"id"`
-	CreatedAt *time.Time `json:"created_at"`
+	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at"`
 }
 
 type User struct {
-	Model    `json:"model"`
+	Model
 	UUID     string `json:"UUID"`
 	Name     string `json:"Name"`
 	Email    string `json:"Email"`
-	Password string `json:"PassWord"`
+	Password string `json:"Password"`
 }
 
 type Todo struct {
-	gorm.Model
+	Model
 	Content string `json:"Content"`
 	UserID  int    `json:"UserID"`
 }
